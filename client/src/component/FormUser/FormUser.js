@@ -10,13 +10,15 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import {makeStyles} from "@material-ui/core/styles";
 import {useDispatch, useSelector} from "react-redux";
 import {editRecordUser, insertRecordUser, deleteRecordUser} from "../../store/action/usersAction";
+import Avatar from "@material-ui/core/Avatar";
+import Input from '@material-ui/core/Input';
 
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
     },
     inputText: {
-        padding: theme.spacing(1)
+        marginTop: theme.spacing(3)
 
     },
     buttonDelete:{color: "red", margin: theme.spacing(2)},
@@ -29,41 +31,52 @@ const useStyles = makeStyles((theme) => ({
     dialog:{
         width:'100vw',
         height: '100vh'
+    },
+    avatar:{
+        position: 'absolute',
+        zIndex: 1,
+        right: 30,
+        top: 20,
+        margin: '0 auto',
+        width: theme.spacing(10),
+        height: theme.spacing(10)
     }
 }));
 
 function FormUser(props){
-    const {openFormDialog, setOpenFormDialog, newRecord, setNewRecord} = props
+    const {openFormDialog, setOpenFormDialog, newRecord} = props
     const dispatch = useDispatch();
     const classes = useStyles();
     const [valueId, setValueId] = useState(0);
     const [valueName, setValueName] = useState('');
     const [valueSurname, setValueSurname] = useState('');
     const [valueDescription, setValueDescription] = useState('');
+    const [valueImage, setValueImage] = useState('');
     const [titleDialog, setTitleDialog] = useState('EDIT');
     const [modifyData, setModifyData] = useState(false)
 
     const user = useSelector(state => state.users.item);
 
     useEffect(()=>{
-        console.log(newRecord)
         if (newRecord){
             setTitleDialog('NEW')
             setValueName("");
             setValueSurname("");
             setValueDescription("");
+            setValueImage(null);
         }else if (openFormDialog) {
-            console.log(user)
             setValueId(user.id)
             setTitleDialog('EDIT')
             setValueName(user.name);
             setValueSurname(user.surname);
             setValueDescription(user.description);
+            setValueImage(user.avatar)
         }
     },[user, newRecord])
 
     const handleClose = () => {
         setOpenFormDialog(false);
+        setModifyData(false);
     }
 
     const handleChangeName= (event) => {
@@ -96,7 +109,8 @@ function FormUser(props){
             id: valueId,
             name: valueName,
             surname: valueSurname,
-            description: valueDescription
+            description: valueDescription,
+            avatar:valueImage
         }
         dispatch(await editRecordUser(user))
     }
@@ -106,7 +120,8 @@ function FormUser(props){
             id: valueId,
             name: valueName,
             surname: valueSurname,
-            description: valueDescription
+            description: valueDescription,
+            avatar:valueImage
         }
         dispatch(await insertRecordUser(user))
     }
@@ -121,6 +136,17 @@ function FormUser(props){
         handleClose();
     }
 
+    const handleFile = (e) => {
+        const content = e.target.result;
+        setValueImage(content)
+    }
+
+    const handleChangeFile = (file) => {
+        let fileData = new FileReader();
+        fileData.onloadend = handleFile;
+        fileData.readAsDataURL(file)
+        setModifyData(true);
+    }
 
     return (
         <React.Fragment>
@@ -137,7 +163,15 @@ function FormUser(props){
                     </DialogContentText>
 
                     <form className={classes.root} noValidate autoComplete="off">
-                    <TextField
+                    <Avatar src={valueImage} className={classes.avatar} alt="AVATAR" />
+                    <Input
+                        type="file"
+                        accept=".png"
+                        onChange={e => handleChangeFile(e.target.files[0])}
+                        fullWidth
+                    />
+
+                        <TextField
                         type="text"
                         variant="outlined"
                         className ={classes.inputText}

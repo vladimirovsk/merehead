@@ -25,7 +25,7 @@ const editUser = async (user) =>{
     let body = {
         name: user.name,
         surname:user.surname,
-        image: user.avatar,
+        avatar: user.avatar,
         description: user.description
     }
     axios.put(`/api/users/${user.id}`, body)
@@ -43,7 +43,7 @@ const insertUser = async (user)=> {
     let body = {
         name: user.name,
         surname:user.surname,
-        image: user.avatar,
+        avatar: user.avatar,
         description: user.description
     }
     axios.post(`/api/users/`, body)
