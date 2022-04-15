@@ -7,12 +7,10 @@ import {composeWithDevTools} from "redux-devtools-extension";
 import {createStore, applyMiddleware} from 'redux';
 import rootReducers from './store/reducers/rootReducers';
 
-
 const store = createStore(
     rootReducers,
     composeWithDevTools(applyMiddleware(thunk))
 );
-
 
 ReactDOM.render(
     <Provider store={store}>
@@ -20,4 +18,3 @@ ReactDOM.render(
     </Provider>,
   document.getElementById('root')
 );
-
